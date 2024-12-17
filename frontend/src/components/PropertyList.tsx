@@ -147,8 +147,6 @@ const PropertyList: React.FC<PropertyListProps> = () => {
                   <Card.Title>{highlightText(property.name)}</Card.Title>
                   <Card.Text>{property.description}</Card.Text>
                   <dl className="property-details">
-                    <dt>City</dt>
-                    <dd>{property.city}</dd>
                     <dt>Price</dt>
                     <dd>${property.price}</dd>
                     <dt>Room Type</dt>
