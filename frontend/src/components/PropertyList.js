@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Container, Row, Col, Card, Form, Button } from 'react-bootstrap';
-import './PropertyList.css'; // Import the CSS file for styling
+import './PropertyList.css';
 
 function PropertyList() {
   const [city, setCity] = useState('');
@@ -48,10 +48,12 @@ function PropertyList() {
         <div className="property-list">
           {properties.map((property) => (
             <div className="property-box" key={property.id}>
-              <h2>{property.title}</h2>
+              <h2>{property.name}</h2>
               <p>{property.description}</p>
               <p>City: {property.city}</p>
               <p>Price: ${property.price}</p>
+              <p>Room Type: {property.room_type}</p>
+              <p>Minimum Nights: {property.minimum_nights}</p>
             </div>
           ))}
         </div>
