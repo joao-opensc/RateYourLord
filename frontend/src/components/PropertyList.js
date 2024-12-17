@@ -3,7 +3,7 @@ import { Container, Row, Col, Card, Form, Button } from 'react-bootstrap';
 import './PropertyList.css';
 
 function PropertyList() {
-  const [city, setCity] = useState('');
+  const [reviews, setReviews] = useState('');
   const [properties, setProperties] = useState([]);
   const [error, setError] = useState(null);
 
@@ -32,16 +32,30 @@ function PropertyList() {
 
   const searchProperties = async () => {
     try {
-      const response = await fetch(`http://localhost:5002/search?city=${city}`);
+      const response = await fetch('http://localhost:5002/search');
       if (!response.ok) {
         throw new Error('Network response was not ok');
       }
       const data = await response.json();
-      setProperties(data);
+      
+      // Filter properties by number of reviews
+      const filteredProperties = data.filter(property => 
+        property.number_of_reviews >= parseInt(reviews) || reviews === ''
+      );
+      setProperties(filteredProperties);
     } catch (error) {
       console.error('Error searching properties:', error);
       setError('Failed to search properties. Please try again later.');
     }
+  };
+
+  const highlightText = (text) => {
+    const parts = text.split(/(lovely)/gi); // Split by the word "lovely"
+    return parts.map((part, index) => 
+      part.toLowerCase() === 'lovely' ? (
+        <span key={index} style={{ backgroundColor: 'yellow' }}>{part}</span>
+      ) : part
+    );
   };
 
   return (
@@ -51,11 +65,11 @@ function PropertyList() {
         <Row className="justify-content-center">
           <Col md={8}>
             <Form.Control
-              type="text"
-              value={city}
-              onChange={(e) => setCity(e.target.value)}
-              placeholder="Enter city"
-              aria-label="City search"
+              type="number"
+              value={reviews}
+              onChange={(e) => setReviews(e.target.value)}
+              placeholder="Enter minimum reviews"
+              aria-label="Reviews search"
             />
           </Col>
           <Col md={4}>
@@ -72,12 +86,12 @@ function PropertyList() {
             <Col md={4} key={property.id} className="mb-4">
               <Card className="property-box">
                 <Card.Body>
-                  <Card.Title>{property.name}</Card.Title>
+                  <Card.Title>{highlightText(property.name)}</Card.Title>
                   <Card.Text>{property.description}</Card.Text>
-                  <Card.Text><strong>City:</strong> {property.city}</Card.Text>
                   <Card.Text><strong>Price:</strong> ${property.price}</Card.Text>
                   <Card.Text><strong>Room Type:</strong> {property.room_type}</Card.Text>
                   <Card.Text><strong>Minimum Nights:</strong> {property.minimum_nights}</Card.Text>
+                  <Card.Text><strong>Reviews:</strong> {property.number_of_reviews}</Card.Text>
                 </Card.Body>
               </Card>
             </Col>
