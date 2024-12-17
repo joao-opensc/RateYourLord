@@ -1,5 +1,5 @@
 CREATE TABLE properties (
-  id INT PRIMARY KEY,
+  id BIGINT PRIMARY KEY,
   name VARCHAR(255),
   host_id INT,
   host_name VARCHAR(255),
