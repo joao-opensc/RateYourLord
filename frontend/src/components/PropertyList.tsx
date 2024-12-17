@@ -2,7 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { Container, Row, Col, Card, Form, Button } from 'react-bootstrap';
 import './PropertyList.css';
 
-interface Property {
+// Define types in a separate section for better organization
+type Property = {
   id: number;
   name: string;
   description: string;
@@ -10,94 +11,119 @@ interface Property {
   price: number;
   room_type: string;
   minimum_nights: number;
-}
+};
 
-const PropertyList: React.FC = () => {
-  const [city, setCity] = useState<string>(''); // State for the search input
-  const [properties, setProperties] = useState<Property[]>([]); // State for the list of properties
-  const [error, setError] = useState<string | null>(null); // State for error messages
+// Define props interface (even if empty, for future extensibility)
+interface PropertyListProps {}
 
-  // Fetch all properties on component mount
-  useEffect(() => {
-    const fetchProperties = async () => {
-      try {
-        const response = await fetch('http://localhost:8000/search');
-        if (!response.ok) throw new Error('Network response was not ok');
-        const data: Property[] = await response.json();
-        const shuffledProperties = data.sort(() => 0.5 - Math.random()).slice(0, 12);
-        setProperties(shuffledProperties);
-      } catch (error) {
-        console.error('Error fetching properties:', error);
-        setError('Failed to load properties. Please try again later.');
-      }
-    };
+// Define custom hook for property management
+const usePropertyManagement = () => {
+  const [properties, setProperties] = useState<Property[]>([]);
+  const [error, setError] = useState<string | null>(null);
+  const [searchTerm, setSearchTerm] = useState<string>('');
 
-    fetchProperties();
-  }, []);
-
-  const searchProperties = async () => {
+  const fetchProperties = async (): Promise<void> => {
     try {
       const response = await fetch('http://localhost:8000/search');
       if (!response.ok) throw new Error('Network response was not ok');
       const data: Property[] = await response.json();
-      const filteredProperties = data.filter((property: Property) =>
-        property.name.toLowerCase().includes(city.toLowerCase())
+      const shuffledProperties = data
+        .sort(() => 0.5 - Math.random())
+        .slice(0, 12);
+      setProperties(shuffledProperties);
+      setError(null);
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : 'An unknown error occurred';
+      console.error('Error fetching properties:', errorMessage);
+      setError('Failed to load properties. Please try again later.');
+    }
+  };
+
+  const searchProperties = async (): Promise<void> => {
+    try {
+      const response = await fetch('http://localhost:8000/search');
+      if (!response.ok) throw new Error('Network response was not ok');
+      const data: Property[] = await response.json();
+      const filteredProperties = data.filter((property) =>
+        property.name.toLowerCase().includes(searchTerm.toLowerCase())
       );
       setProperties(filteredProperties);
-    } catch (error) {
-      console.error('Error searching properties:', error);
+      setError(null);
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : 'An unknown error occurred';
+      console.error('Error searching properties:', errorMessage);
       setError('Failed to search properties. Please try again later.');
     }
   };
 
-  const handleKeyPress = (event: React.KeyboardEvent<HTMLInputElement>) => {
+  return {
+    properties,
+    error,
+    searchTerm,
+    setSearchTerm,
+    fetchProperties,
+    searchProperties,
+  };
+};
+
+// Main component
+const PropertyList: React.FC<PropertyListProps> = () => {
+  const {
+    properties,
+    error,
+    searchTerm,
+    setSearchTerm,
+    fetchProperties,
+    searchProperties,
+  } = usePropertyManagement();
+
+  useEffect(() => {
+    fetchProperties();
+  }, []);
+
+  const handleKeyPress = (event: React.KeyboardEvent<HTMLInputElement>): void => {
     if (event.key === 'Enter') {
-      event.preventDefault(); // Prevent form submission
-      searchProperties(); // Call searchProperties on Enter key press
+      event.preventDefault();
+      searchProperties();
     }
   };
 
-  // Highlight all occurrences of the search term in the property name
-  const highlightText = (text: string) => {
-    const regex = new RegExp(`(${city})`, 'gi'); // Create a regex to match the search term
-    const parts = text.split(regex); // Split the text by the search term
+  const highlightText = (text: string): React.ReactNode => {
+    if (!searchTerm) return text;
+    
+    const regex = new RegExp(`(${searchTerm})`, 'gi');
+    const parts = text.split(regex);
+    
     return parts.map((part, index) =>
-      part.toLowerCase() === city.toLowerCase() ? (
-        <span key={index} style={{ backgroundColor: 'yellow' }}>{part}</span>
-      ) : part
+      part.toLowerCase() === searchTerm.toLowerCase() ? (
+        <span key={index} className="highlighted-text">
+          {part}
+        </span>
+      ) : (
+        part
+      )
     );
-  };
-
-  const resetProperties = async () => {
-    setCity(''); // Clear the search input
-    try {
-      const response = await fetch('http://localhost:8000/search');
-      if (!response.ok) throw new Error('Network response was not ok');
-      const data: Property[] = await response.json();
-      setProperties(data);
-    } catch (error) {
-      console.error('Error resetting properties:', error);
-      setError('Failed to reset properties. Please try again later.');
-    }
   };
 
   return (
     <Container className="mt-5">
       <h1
-        className="text-center mb-4"
-        onClick={resetProperties}
-        style={{ cursor: 'pointer' }}
+        className="text-center mb-4 clickable-header"
+        onClick={fetchProperties}
+        role="button"
+        tabIndex={0}
       >
         Property Listings
       </h1>
+
       <Form className="mb-4 text-center">
         <Row className="justify-content-center">
           <Col md={8}>
             <Form.Control
               type="text"
-              value={city}
-              onChange={(e) => setCity(e.target.value)}
-              onKeyPress={handleKeyPress} // Handle Enter key press
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              onKeyPress={handleKeyPress}
               placeholder="Enter property name"
               aria-label="Property search"
             />
@@ -109,7 +135,9 @@ const PropertyList: React.FC = () => {
           </Col>
         </Row>
       </Form>
+
       {error && <p className="text-danger text-center">{error}</p>}
+
       <Row>
         {properties.length > 0 ? (
           properties.map((property) => (
@@ -118,10 +146,16 @@ const PropertyList: React.FC = () => {
                 <Card.Body>
                   <Card.Title>{highlightText(property.name)}</Card.Title>
                   <Card.Text>{property.description}</Card.Text>
-                  <Card.Text><strong>City:</strong> {property.city}</Card.Text>
-                  <Card.Text><strong>Price:</strong> ${property.price}</Card.Text>
-                  <Card.Text><strong>Room Type:</strong> {property.room_type}</Card.Text>
-                  <Card.Text><strong>Minimum Nights:</strong> {property.minimum_nights}</Card.Text>
+                  <dl className="property-details">
+                    <dt>City</dt>
+                    <dd>{property.city}</dd>
+                    <dt>Price</dt>
+                    <dd>${property.price}</dd>
+                    <dt>Room Type</dt>
+                    <dd>{property.room_type}</dd>
+                    <dt>Minimum Nights</dt>
+                    <dd>{property.minimum_nights}</dd>
+                  </dl>
                 </Card.Body>
               </Card>
             </Col>
@@ -134,6 +168,6 @@ const PropertyList: React.FC = () => {
       </Row>
     </Container>
   );
-}
+};
 
 export default PropertyList; 

@@ -12,12 +12,11 @@
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
     margin: 10px;
     padding: 15px;
-    width: 300px; /* Adjust width as needed */
-    transition: transform 0.2s;
+    transition: transform 0.2s ease-in-out;
 }
 
 .property-box:hover {
-    transform: scale(1.05);
+    transform: scale(1.02);
 }
 
 .text-center {
@@ -26,4 +25,33 @@
 
 .mb-4 {
     margin-bottom: 1.5rem; /* Adjust as needed */
+}
+
+.property-details {
+    margin: 1rem 0;
+}
+
+.property-details dt {
+    font-weight: bold;
+    margin-top: 0.5rem;
+}
+
+.property-details dd {
+    margin-left: 1rem;
+    margin-bottom: 0.5rem;
+}
+
+.highlighted-text {
+    background-color: #fff3cd;
+    padding: 0.1rem 0.2rem;
+    border-radius: 2px;
+}
+
+.clickable-header {
+    cursor: pointer;
+    transition: opacity 0.2s ease;
+}
+
+.clickable-header:hover {
+    opacity: 0.8;
 } 
