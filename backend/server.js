@@ -31,6 +31,10 @@ app.get('/search', async (req, res) => {
   }
 });
 
+app.get('/', (req, res) => {
+  res.send('Welcome to the Property Search API');
+});
+
 app.listen(port, () => {
   console.log(`Server running on port ${port}`);
 }); 
