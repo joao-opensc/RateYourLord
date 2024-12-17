@@ -1,34 +1,32 @@
-   version: '3.8'
+services:
+  db:
+    image: postgres:13
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 123456
+      POSTGRES_DB: zoopla_clone
+    ports:
+      - "5433:5432"
+    volumes:
+      - db_data:/var/lib/postgresql/data
+      - ./backend/database.sql:/docker-entrypoint-initdb.d/database.sql
+      - ./data:/docker-entrypoint-initdb.d/data # Add this line
 
-   services:
-     db:
-       image: postgres:13
-       environment:
-         POSTGRES_USER: postgres
-         POSTGRES_PASSWORD: 123456
-         POSTGRES_DB: zoopla_clone
-       ports:
-         - "5433:5432"
-       volumes:
-         - db_data:/var/lib/postgresql/data
-         - ./backend/database.sql:/docker-entrypoint-initdb.d/database.sql
-         - ./data:/docker-entrypoint-initdb.d/data  # Add this line
+  backend:
+    build: ./backend
+    ports:
+      - "5002:5001"
+    depends_on:
+      - db
+    env_file:
+      - ./backend/.env
 
-     backend:
-       build: ./backend
-       ports:
-         - "5002:5001"
-       depends_on:
-         - db
-       env_file:
-         - ./backend/.env
+  frontend:
+    build: ./frontend
+    ports:
+      - "3002:3001"
+    depends_on:
+      - backend
 
-     frontend:
-       build: ./frontend
-       ports:
-         - "3002:3001"
-       depends_on:
-         - backend
-
-   volumes:
-     db_data: 
+volumes:
+  db_data:

@@ -17,7 +17,7 @@ function PropertyList() {
         }
         const data = await response.json();
         console.log('Fetched properties:', data);
-        
+
         // Shuffle and slice the first 12 properties
         const shuffledProperties = data.sort(() => 0.5 - Math.random()).slice(0, 12);
         setProperties(shuffledProperties);
@@ -37,9 +37,9 @@ function PropertyList() {
         throw new Error('Network response was not ok');
       }
       const data = await response.json();
-      
+
       // Filter properties by title
-      const filteredProperties = data.filter(property => 
+      const filteredProperties = data.filter(property =>
         property.name.toLowerCase().includes(city.toLowerCase())
       );
       setProperties(filteredProperties);
@@ -58,16 +58,38 @@ function PropertyList() {
 
   const highlightText = (text) => {
     const parts = text.split(/(lovely)/gi); // Split by the word "lovely"
-    return parts.map((part, index) => 
+    return parts.map((part, index) =>
       part.toLowerCase() === 'lovely' ? (
         <span key={index} style={{ backgroundColor: 'yellow' }}>{part}</span>
       ) : part
     );
   };
 
+  const resetProperties = async () => {
+    setCity('');
+    try {
+      const response = await fetch('http://localhost:5002/search');
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+      const data = await response.json();
+      const shuffledProperties = data.sort(() => 0.5 - Math.random()).slice(0, 12);
+      setProperties(shuffledProperties);
+    } catch (error) {
+      console.error('Error resetting properties:', error);
+      setError('Failed to reset properties. Please try again later.');
+    }
+  };
+
   return (
     <Container className="mt-5">
-      <h1 className="text-center mb-4">Property Listings</h1>
+      <h1
+        className="text-center mb-4"
+        onClick={resetProperties}
+        style={{ cursor: 'pointer' }}
+      >
+        Property Listings
+      </h1>
       <Form className="mb-4 text-center">
         <Row className="justify-content-center">
           <Col md={8}>
