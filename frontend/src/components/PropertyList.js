@@ -3,7 +3,7 @@ import { Container, Row, Col, Card, Form, Button } from 'react-bootstrap';
 import './PropertyList.css';
 
 function PropertyList() {
-  const [reviews, setReviews] = useState('');
+  const [city, setCity] = useState('');
   const [properties, setProperties] = useState([]);
   const [error, setError] = useState(null);
 
@@ -38,14 +38,21 @@ function PropertyList() {
       }
       const data = await response.json();
       
-      // Filter properties by number of reviews
+      // Filter properties by title
       const filteredProperties = data.filter(property => 
-        property.number_of_reviews >= parseInt(reviews) || reviews === ''
+        property.name.toLowerCase().includes(city.toLowerCase())
       );
       setProperties(filteredProperties);
     } catch (error) {
       console.error('Error searching properties:', error);
       setError('Failed to search properties. Please try again later.');
+    }
+  };
+
+  const handleKeyPress = (event) => {
+    if (event.key === 'Enter') {
+      event.preventDefault(); // Prevent form submission
+      searchProperties(); // Call searchProperties on Enter key press
     }
   };
 
@@ -65,11 +72,12 @@ function PropertyList() {
         <Row className="justify-content-center">
           <Col md={8}>
             <Form.Control
-              type="number"
-              value={reviews}
-              onChange={(e) => setReviews(e.target.value)}
-              placeholder="Enter minimum reviews"
-              aria-label="Reviews search"
+              type="text"
+              value={city}
+              onChange={(e) => setCity(e.target.value)}
+              onKeyPress={handleKeyPress} // Handle Enter key press
+              placeholder="Enter property name"
+              aria-label="Property search"
             />
           </Col>
           <Col md={4}>
@@ -88,10 +96,10 @@ function PropertyList() {
                 <Card.Body>
                   <Card.Title>{highlightText(property.name)}</Card.Title>
                   <Card.Text>{property.description}</Card.Text>
+                  <Card.Text><strong>City:</strong> {property.city}</Card.Text>
                   <Card.Text><strong>Price:</strong> ${property.price}</Card.Text>
                   <Card.Text><strong>Room Type:</strong> {property.room_type}</Card.Text>
                   <Card.Text><strong>Minimum Nights:</strong> {property.minimum_nights}</Card.Text>
-                  <Card.Text><strong>Reviews:</strong> {property.number_of_reviews}</Card.Text>
                 </Card.Body>
               </Card>
             </Col>
