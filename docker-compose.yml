@@ -4,9 +4,9 @@ services:
   db:
     image: postgres:13
     environment:
-      POSTGRES_USER: your_db_user
-      POSTGRES_PASSWORD: your_db_password
-      POSTGRES_DB: your_db_name
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 123456
+      POSTGRES_DB: zoopla_clone
     ports:
       - "5432:5432"
     volumes:
@@ -25,7 +25,7 @@ services:
   frontend:
     build: ./frontend
     ports:
-      - "3000:3000"
+      - "3001:3001"
     depends_on:
       - backend
 
