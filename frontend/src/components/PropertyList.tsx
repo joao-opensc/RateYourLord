@@ -2,10 +2,20 @@ import React, { useState, useEffect } from 'react';
 import { Container, Row, Col, Card, Form, Button } from 'react-bootstrap';
 import './PropertyList.css';
 
-function PropertyList() {
-  const [city, setCity] = useState('');
-  const [properties, setProperties] = useState([]);
-  const [error, setError] = useState(null);
+interface Property {
+  id: number;
+  name: string;
+  description: string;
+  city: string;
+  price: number;
+  room_type: string;
+  minimum_nights: number;
+}
+
+const PropertyList: React.FC = () => {
+  const [city, setCity] = useState<string>('');
+  const [properties, setProperties] = useState<Property[]>([]);
+  const [error, setError] = useState<string | null>(null);
 
   // Fetch all properties on component mount
   useEffect(() => {
@@ -15,10 +25,8 @@ function PropertyList() {
         if (!response.ok) {
           throw new Error('Network response was not ok');
         }
-        const data = await response.json();
+        const data: Property[] = await response.json();
         console.log('Fetched properties:', data);
-
-        // Shuffle and slice the first 12 properties
         const shuffledProperties = data.sort(() => 0.5 - Math.random()).slice(0, 12);
         setProperties(shuffledProperties);
       } catch (error) {
@@ -29,6 +37,7 @@ function PropertyList() {
 
     fetchProperties();
   }, []);
+
 
   const searchProperties = async () => {
     try {
@@ -136,4 +145,4 @@ function PropertyList() {
   );
 }
 
-export default PropertyList;
+export default PropertyList; 
