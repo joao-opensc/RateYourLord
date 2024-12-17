@@ -17,7 +17,10 @@ function PropertyList() {
         }
         const data = await response.json();
         console.log('Fetched properties:', data);
-        setProperties(data);
+        
+        // Shuffle and slice the first 12 properties
+        const shuffledProperties = data.sort(() => 0.5 - Math.random()).slice(0, 12);
+        setProperties(shuffledProperties);
       } catch (error) {
         console.error('Error fetching properties:', error);
         setError('Failed to load properties. Please try again later.');
