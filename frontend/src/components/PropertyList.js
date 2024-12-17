@@ -9,7 +9,7 @@ function PropertyList() {
   // Fetch all properties on component mount
   useEffect(() => {
     const fetchProperties = async () => {
-      const response = await fetch('http://localhost:5001/search');
+      const response = await fetch('http://backend:5001/search');
       const data = await response.json();
       console.log(data);
       setProperties(data);
@@ -19,7 +19,7 @@ function PropertyList() {
   }, []);
 
   const searchProperties = async () => {
-    const response = await fetch(`http://localhost:5001/search?city=${city}`);
+    const response = await fetch(`http://backend:5001/search?city=${city}`);
     const data = await response.json();
     setProperties(data);
   };
