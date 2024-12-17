@@ -11,11 +11,12 @@ function PropertyList() {
   useEffect(() => {
     const fetchProperties = async () => {
       try {
-        const response = await fetch('http://backend:5001/search');
+        const response = await fetch('http://localhost:5002/search');
         if (!response.ok) {
           throw new Error('Network response was not ok');
         }
         const data = await response.json();
+        console.log('Fetched properties:', data);
         setProperties(data);
       } catch (error) {
         console.error('Error fetching properties:', error);
@@ -28,7 +29,7 @@ function PropertyList() {
 
   const searchProperties = async () => {
     try {
-      const response = await fetch(`http://backend:5001/search?city=${city}`);
+      const response = await fetch(`http://localhost:5002/search?city=${city}`);
       if (!response.ok) {
         throw new Error('Network response was not ok');
       }
