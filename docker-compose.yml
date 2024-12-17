@@ -10,12 +10,12 @@ services:
     volumes:
       - db_data:/var/lib/postgresql/data
       - ./backend/database.sql:/docker-entrypoint-initdb.d/database.sql
-      - ./data:/docker-entrypoint-initdb.d/data # Add this line
+      - ./data:/docker-entrypoint-initdb.d/data
 
   backend:
     build: ./backend
     ports:
-      - "5002:5001"
+      - "8000:8000"
     depends_on:
       - db
     env_file:

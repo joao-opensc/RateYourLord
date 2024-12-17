@@ -11,7 +11,7 @@ function PropertyList() {
   useEffect(() => {
     const fetchProperties = async () => {
       try {
-        const response = await fetch('http://localhost:5002/search');
+        const response = await fetch('http://localhost:8000/search');
         if (!response.ok) {
           throw new Error('Network response was not ok');
         }
@@ -32,11 +32,12 @@ function PropertyList() {
 
   const searchProperties = async () => {
     try {
-      const response = await fetch('http://localhost:5002/search');
+      const response = await fetch('http://localhost:8000/search');
       if (!response.ok) {
         throw new Error('Network response was not ok');
       }
       const data = await response.json();
+      console.log('Fetched properties:', data);
 
       // Filter properties by title
       const filteredProperties = data.filter(property =>
@@ -68,13 +69,12 @@ function PropertyList() {
   const resetProperties = async () => {
     setCity('');
     try {
-      const response = await fetch('http://localhost:5002/search');
+      const response = await fetch('http://localhost:8000/search');
       if (!response.ok) {
         throw new Error('Network response was not ok');
       }
       const data = await response.json();
-      const shuffledProperties = data.sort(() => 0.5 - Math.random()).slice(0, 12);
-      setProperties(shuffledProperties);
+      setProperties(data);
     } catch (error) {
       console.error('Error resetting properties:', error);
       setError('Failed to reset properties. Please try again later.');

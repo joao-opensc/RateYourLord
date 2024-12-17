@@ -1,12 +1,12 @@
-FROM node:14
+FROM python:3.9
 
 WORKDIR /app
 
-COPY package.json ./
-RUN npm install
+COPY requirements.txt ./
+RUN pip install --no-cache-dir -r requirements.txt
 
 COPY . .
 
-EXPOSE 5001
+EXPOSE 8000
 
-CMD ["npm", "start"] 
+CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"] 
