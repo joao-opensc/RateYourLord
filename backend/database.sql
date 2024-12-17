@@ -1,5 +1,5 @@
 CREATE TABLE properties (
-  id SERIAL PRIMARY KEY,
+  id INT PRIMARY KEY,
   name VARCHAR(255),
   host_id INT,
   host_name VARCHAR(255),
@@ -19,7 +19,8 @@ CREATE TABLE properties (
   license VARCHAR(50)
 );
 
-COPY properties(name, host_id, host_name, neighbourhood_group, neighbourhood, latitude, longitude, room_type, price, minimum_nights, number_of_reviews, last_review, reviews_per_month, calculated_host_listings_count, availability_365, number_of_reviews_ltm, license)
+COPY properties(id, name, host_id, host_name, neighbourhood_group, neighbourhood, latitude, longitude, room_type, price, minimum_nights, number_of_reviews, last_review, reviews_per_month, calculated_host_listings_count, availability_365, number_of_reviews_ltm, license)
 FROM '/docker-entrypoint-initdb.d/data/airbnb_listings.csv' 
 DELIMITER ',' 
-CSV HEADER;
+CSV HEADER 
+NULL '';
