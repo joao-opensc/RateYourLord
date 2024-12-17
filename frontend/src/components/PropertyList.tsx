@@ -13,20 +13,17 @@ interface Property {
 }
 
 const PropertyList: React.FC = () => {
-  const [city, setCity] = useState<string>('');
-  const [properties, setProperties] = useState<Property[]>([]);
-  const [error, setError] = useState<string | null>(null);
+  const [city, setCity] = useState<string>(''); // State for the search input
+  const [properties, setProperties] = useState<Property[]>([]); // State for the list of properties
+  const [error, setError] = useState<string | null>(null); // State for error messages
 
   // Fetch all properties on component mount
   useEffect(() => {
     const fetchProperties = async () => {
       try {
         const response = await fetch('http://localhost:8000/search');
-        if (!response.ok) {
-          throw new Error('Network response was not ok');
-        }
+        if (!response.ok) throw new Error('Network response was not ok');
         const data: Property[] = await response.json();
-        console.log('Fetched properties:', data);
         const shuffledProperties = data.sort(() => 0.5 - Math.random()).slice(0, 12);
         setProperties(shuffledProperties);
       } catch (error) {
@@ -38,18 +35,12 @@ const PropertyList: React.FC = () => {
     fetchProperties();
   }, []);
 
-
   const searchProperties = async () => {
     try {
       const response = await fetch('http://localhost:8000/search');
-      if (!response.ok) {
-        throw new Error('Network response was not ok');
-      }
-      const data = await response.json();
-      console.log('Fetched properties:', data);
-
-      // Filter properties by title
-      const filteredProperties = data.filter(property =>
+      if (!response.ok) throw new Error('Network response was not ok');
+      const data: Property[] = await response.json();
+      const filteredProperties = data.filter((property: Property) =>
         property.name.toLowerCase().includes(city.toLowerCase())
       );
       setProperties(filteredProperties);
@@ -59,30 +50,30 @@ const PropertyList: React.FC = () => {
     }
   };
 
-  const handleKeyPress = (event) => {
+  const handleKeyPress = (event: React.KeyboardEvent<HTMLInputElement>) => {
     if (event.key === 'Enter') {
       event.preventDefault(); // Prevent form submission
       searchProperties(); // Call searchProperties on Enter key press
     }
   };
 
-  const highlightText = (text) => {
-    const parts = text.split(/(lovely)/gi); // Split by the word "lovely"
+  // Highlight all occurrences of the search term in the property name
+  const highlightText = (text: string) => {
+    const regex = new RegExp(`(${city})`, 'gi'); // Create a regex to match the search term
+    const parts = text.split(regex); // Split the text by the search term
     return parts.map((part, index) =>
-      part.toLowerCase() === 'lovely' ? (
+      part.toLowerCase() === city.toLowerCase() ? (
         <span key={index} style={{ backgroundColor: 'yellow' }}>{part}</span>
       ) : part
     );
   };
 
   const resetProperties = async () => {
-    setCity('');
+    setCity(''); // Clear the search input
     try {
       const response = await fetch('http://localhost:8000/search');
-      if (!response.ok) {
-        throw new Error('Network response was not ok');
-      }
-      const data = await response.json();
+      if (!response.ok) throw new Error('Network response was not ok');
+      const data: Property[] = await response.json();
       setProperties(data);
     } catch (error) {
       console.error('Error resetting properties:', error);
