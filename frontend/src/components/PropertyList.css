@@ -6,11 +6,14 @@
 }
 
 .property-box {
+    display: flex;
+    align-items: center;
+    width: 100%;
     background-color: #f9f9f9;
     border: 1px solid #ddd;
     border-radius: 8px;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-    margin: 10px;
+    margin: 10px 0;
     padding: 15px;
     transition: transform 0.2s ease-in-out;
 }
@@ -28,7 +31,7 @@
 }
 
 .property-details {
-    margin: 1rem 0;
+    flex: 1;
 }
 
 .property-details dt {
@@ -54,4 +57,43 @@
 
 .clickable-header:hover {
     opacity: 0.8;
-} 
+}
+
+.property-price {
+    font-size: 1.5rem;
+    font-weight: bold;
+}
+
+.property-image {
+    width: 100%; /* Ensure the image takes full width */
+    height: auto; /* Maintain aspect ratio */
+    object-fit: cover; /* Cover the area without squeezing */
+    margin: 0; /* Remove any margin */
+    padding: 0; /* Ensure no padding */
+    border-radius: 0; /* Remove border radius if any */
+    margin-left: -10px; /* Move the image more to the left */
+}
+
+/* frontend/src/components/PropertyList.css */
+.property-box {
+    height: auto; /* Adjust height as needed */
+    margin-bottom: 20px; /* Space between cards */
+  }
+  
+  .smaller-card {
+    padding: 0; /* Remove padding for a thinner card */
+  }
+  
+  .property-image {
+    width: 100%; /* Ensure the image takes full width */
+    height: auto; /* Maintain aspect ratio */
+    object-fit: cover; /* Cover the area without squeezing */
+    margin: 0; /* Remove any margin */
+    padding: 0; /* Ensure no padding */
+    border-radius: 0; /* Remove border radius if any */
+    margin-left: -10px; /* Move the image more to the left */
+  }
+  
+  .property-details {
+    text-align: left; /* Align text to the left */
+  }

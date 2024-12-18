@@ -141,20 +141,25 @@ const PropertyList: React.FC<PropertyListProps> = () => {
       <Row>
         {properties.length > 0 ? (
           properties.map((property) => (
-            <Col md={4} key={property.id} className="mb-4">
-              <Card className="property-box">
-                <Card.Body>
-                  <Card.Title>{highlightText(property.name)}</Card.Title>
-                  <Card.Text>{property.description}</Card.Text>
-                  <dl className="property-details">
-                    <dt>Price</dt>
-                    <dd>${property.price}</dd>
-                    <dt>Room Type</dt>
-                    <dd>{property.room_type}</dd>
-                    <dt>Minimum Nights</dt>
-                    <dd>{property.minimum_nights}</dd>
-                  </dl>
-                </Card.Body>
+            <Col md={12} key={property.id} className="mb-4">
+              <Card className="property-box smaller-card">
+                <Row>
+                  <Col md={4} className="d-flex align-items-stretch p-0">
+                    <img src="https://encrypted-tbn3.gstatic.com/images?q=tbn:ANd9GcTkPjqcokqO-8rwnMDtm6YYa1JJ18XNAC0Wy1QWRNi7kJwP3NDn" alt={property.name} className="property-image" />
+                  </Col>
+                  <Col md={8}>
+                    <Card.Body className="property-details text-left">
+                      <Card.Title>{highlightText(property.name)}</Card.Title>
+                      <Card.Text>{property.description}</Card.Text>
+                      <dl className="property-details">
+                        <dt>Price</dt>
+                        <dd className="property-price">${property.price}</dd>
+                        <dt>Room Type</dt>
+                        <dd>{property.room_type}</dd>
+                      </dl>
+                    </Card.Body>
+                  </Col>
+                </Row>
               </Card>
             </Col>
           ))
