@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { Container, Row, Col, Card, Form, Button } from 'react-bootstrap';
 import './PropertyList.css';
 
-// Define types in a separate section for better organization
 type Property = {
   id: number;
   name: string;
@@ -11,18 +10,15 @@ type Property = {
   price: number;
   room_type: string;
   minimum_nights: number;
+  image: string;
 };
 
-// Define props interface (even if empty, for future extensibility)
-interface PropertyListProps {}
-
-// Define custom hook for property management
 const usePropertyManagement = () => {
   const [properties, setProperties] = useState<Property[]>([]);
   const [error, setError] = useState<string | null>(null);
-  const [searchTerm, setSearchTerm] = useState<string>('');
+  const [searchTerm, setSearchTerm] = useState('');
 
-  const fetchProperties = async (): Promise<void> => {
+  const fetchProperties = async () => {
     try {
       const response = await fetch('http://localhost:8000/search');
       if (!response.ok) throw new Error('Network response was not ok');
@@ -39,7 +35,7 @@ const usePropertyManagement = () => {
     }
   };
 
-  const searchProperties = async (): Promise<void> => {
+  const searchProperties = async () => {
     try {
       const response = await fetch('http://localhost:8000/search');
       if (!response.ok) throw new Error('Network response was not ok');
@@ -66,8 +62,7 @@ const usePropertyManagement = () => {
   };
 };
 
-// Main component
-const PropertyList: React.FC<PropertyListProps> = () => {
+const PropertyList: React.FC = () => {
   const {
     properties,
     error,
@@ -81,7 +76,7 @@ const PropertyList: React.FC<PropertyListProps> = () => {
     fetchProperties();
   }, []);
 
-  const handleKeyPress = (event: React.KeyboardEvent<HTMLInputElement>): void => {
+  const handleKeyPress = (event: React.KeyboardEvent): void => {
     if (event.key === 'Enter') {
       event.preventDefault();
       searchProperties();
@@ -90,35 +85,21 @@ const PropertyList: React.FC<PropertyListProps> = () => {
 
   const highlightText = (text: string): React.ReactNode => {
     if (!searchTerm) return text;
-    
     const regex = new RegExp(`(${searchTerm})`, 'gi');
     const parts = text.split(regex);
-    
     return parts.map((part, index) =>
       part.toLowerCase() === searchTerm.toLowerCase() ? (
-        <span key={index} className="highlighted-text">
-          {part}
-        </span>
-      ) : (
-        part
-      )
+        <span key={index} className="highlighted-text">{part}</span>
+      ) : part
     );
   };
 
   return (
-    <Container className="mt-5">
-      <h1
-        className="text-center mb-4 clickable-header"
-        onClick={fetchProperties}
-        role="button"
-        tabIndex={0}
-      >
-        Property Listings
-      </h1>
-
-      <Form className="mb-4 text-center">
-        <Row className="justify-content-center">
-          <Col md={8}>
+    <Container>
+      <h1 className="text-center mb-4">Property Listings</h1>
+      <Row className="mb-4">
+        <Col md={8} className="mx-auto">
+          <Form className="d-flex">
             <Form.Control
               type="text"
               value={searchTerm}
@@ -127,39 +108,43 @@ const PropertyList: React.FC<PropertyListProps> = () => {
               placeholder="Enter property name"
               aria-label="Property search"
             />
-          </Col>
-          <Col md={4}>
-            <Button variant="primary" onClick={searchProperties}>
+            <Button 
+              variant="primary" 
+              onClick={searchProperties}
+              className="ms-2"
+            >
               Search
             </Button>
-          </Col>
-        </Row>
-      </Form>
-
-      {error && <p className="text-danger text-center">{error}</p>}
-
+          </Form>
+        </Col>
+      </Row>
+      {error && <div className="alert alert-danger">{error}</div>}
       <Row>
         {properties.length > 0 ? (
           properties.map((property) => (
-            <Col md={12} key={property.id} className="mb-4">
-              <Card className="property-box smaller-card">
-                <Row>
-                  <Col md={4} className="d-flex align-items-stretch p-0">
-                    <img src="https://encrypted-tbn3.gstatic.com/images?q=tbn:ANd9GcTkPjqcokqO-8rwnMDtm6YYa1JJ18XNAC0Wy1QWRNi7kJwP3NDn" alt={property.name} className="property-image" />
-                  </Col>
-                  <Col md={8}>
-                    <Card.Body className="property-details text-left">
-                      <Card.Title>{highlightText(property.name)}</Card.Title>
-                      <Card.Text>{property.description}</Card.Text>
-                      <dl className="property-details">
-                        <dt>Price</dt>
-                        <dd className="property-price">${property.price}</dd>
-                        <dt>Room Type</dt>
+            <Col key={property.id} xs={12} className="mb-3">
+              <Card className="property-box">
+                <div className="d-flex">
+                  <img 
+                    src={property.image} 
+                    alt={property.name}
+                    className="property-image"
+                  />
+                  <div className="property-details">
+                    <h3>{highlightText(property.name)}</h3>
+                    <p>{property.description}</p>
+                    <dl className="property-info">
+                      <div className="property-info-item">
+                        <dt>Price:</dt>
+                        <dd>${property.price}</dd>
+                      </div>
+                      <div className="property-info-item">
+                        <dt>Room Type:</dt>
                         <dd>{property.room_type}</dd>
-                      </dl>
-                    </Card.Body>
-                  </Col>
-                </Row>
+                      </div>
+                    </dl>
+                  </div>
+                </div>
               </Card>
             </Col>
           ))
@@ -173,4 +158,4 @@ const PropertyList: React.FC<PropertyListProps> = () => {
   );
 };
 
-export default PropertyList; 
+export default PropertyList;
